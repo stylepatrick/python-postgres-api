@@ -1,0 +1,7 @@
+CREATE TABLE money (
+	 id SERIAL PRIMARY KEY,
+	 user_id VARCHAR(255) NOT NULL,
+	 amount float NOT NULL,
+	 note VARCHAR(255),
+	 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+)
