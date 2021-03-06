@@ -2,18 +2,20 @@
 import flask
 import psycopg2
 from flask import request, jsonify
+from psycopg2.extras import RealDictCursor
+
 from config import config
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 
 
-def dbselector(select):
+def db_selector(select):
     conn = None
     try:
         params = config()
         conn = psycopg2.connect(**params)
-        cur = conn.cursor()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
         cur.execute(select)
         res = cur.fetchall()
         cur.close()
@@ -25,7 +27,7 @@ def dbselector(select):
             conn.close()
 
 
-def dbinsert(insert):
+def db_insert(insert):
     conn = None
     try:
         params = config()
@@ -48,28 +50,28 @@ def init():
 
 
 @app.route('/user', methods=['GET'])
-def getUser():
+def get_user():
     select = "SELECT distinct(user_id) from money;"
-    return dbselector(select)
+    return db_selector(select)
 
 
 @app.route('/money', methods=['GET'])
-def getMoney():
+def get_money():
     if 'user_id' in request.args:
         user_id = str(request.args['user_id'])
         select = "SELECT amount, note, created_at from money where user_id ='%s'" % user_id
-        return dbselector(select)
+        return db_selector(select)
     else:
         return "No User provided!"
 
 
 @app.route('/money/create', methods=['GET'])
-def insertMoney():
+def insert_money():
     if 'user_id' and 'amount' in request.args:
         user_id = str(request.args['user_id'])
         amount = float(request.args['amount'])
         insert = "INSERT INTO money (user_id, amount) VALUES ('%s', %f)" % (user_id, amount)
-        return dbinsert(insert)
+        return db_insert(insert)
     else:
         return "No User and/or amount provided!"
 
