@@ -1,0 +1,13 @@
+version: '3.7'
+services:
+    python-postgres-api:
+        ports:
+            - '8000:5000'
+        container_name: python-postgres-api
+        image: python-postgres-api:1
+        restart: always
+        logging:
+          driver: "json-file"
+          options:
+            max-size: "20m"
+            max-file: "5"

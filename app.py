@@ -1,12 +1,11 @@
 #!/usr/bin/python
-import flask
 import psycopg2
-from flask import request, jsonify
+from flask import request, jsonify, Flask
 from psycopg2.extras import RealDictCursor
 
 from config import config
 
-app = flask.Flask(__name__)
+app = Flask(__name__)
 app.config["DEBUG"] = True
 
 
@@ -21,7 +20,8 @@ def db_selector(select):
         cur.close()
         return jsonify(res)
     except (Exception, psycopg2.DatabaseError) as error:
-        return error
+        print(error)
+        return 'Internal Server Error check Server logs.'
     finally:
         if conn is not None:
             conn.close()
@@ -38,7 +38,8 @@ def db_insert(insert):
         conn.commit()
         return 'Done!'
     except (Exception, psycopg2.DatabaseError) as error:
-        return error
+        print(error)
+        return 'Internal Server Error check Server logs.'
     finally:
         if conn is not None:
             conn.close()
@@ -76,4 +77,5 @@ def insert_money():
         return "No User and/or amount provided!"
 
 
-app.run()
+if __name__ == "__main__":
+    app.run()
